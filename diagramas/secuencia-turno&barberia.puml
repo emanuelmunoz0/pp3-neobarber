@@ -1,0 +1,63 @@
+@startuml
+title Reserva de Turno - Barbería
+ 
+actor Cliente
+ 
+participant "Frontend" as Front
+participant "API Usuarios" as APIU
+database "BDD Usuarios" as BDDU
+ 
+participant "API Turnos" as APIT
+database "BDD Turnos" as BDDT
+ 
+Cliente -> Front : Selecciona barbero,\nfecha y hora
+ 
+note right of Front
+JWT obtenido
+durante Login
+end note
+ 
+Front -> APIT : POST /api/turnos\n{barbero_id, fecha, hora}\nBearer JWT
+ 
+activate APIT
+ 
+APIT -> APIU : GET /api/usuarios/validar
+activate APIU
+ 
+APIU -> BDDU : SELECT usuario
+BDDU --> APIU : Usuario encontrado
+ 
+APIU --> APIT : 200 OK
+deactivate APIU
+ 
+APIT -> BDDT : SELECT *\nFROM turnos\nWHERE barbero_id=?\nAND fecha=?\nAND hora=?\nAND estado='reservado'
+ 
+activate BDDT
+ 
+alt No existe turno reservado
+ 
+BDDT --> APIT : Sin coincidencias
+ 
+APIT -> BDDT : INSERT INTO turnos\n(barbero_id,fecha,hora,estado)\nVALUES (...,'reservado')
+ 
+BDDT --> APIT : Turno creado (id)
+ 
+APIT --> Front : 201 Created\nEstado=reservado
+ 
+Front --> Cliente : Turno confirmado
+ 
+else Turno ya reservado
+ 
+BDDT --> APIT : Registro encontrado
+ 
+APIT --> Front : 409 Conflict
+ 
+Front --> Cliente : Horario ocupado
+ 
+end
+ 
+deactivate BDDT
+ 
+deactivate APIT
+ 
+@enduml

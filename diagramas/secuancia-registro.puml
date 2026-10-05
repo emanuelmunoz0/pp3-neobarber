@@ -1,0 +1,37 @@
+@startuml
+title Diagrama de secuencia - Registro
+
+actor Usuario
+participant Frontend
+participant "API Usuarios" as API
+database "DB Usuarios" as DB
+
+Usuario -> Frontend : Completa formulario\n(nombre, email, telefono, password)
+Frontend -> API : POST /users\nbody: {nombre, email, telefono, password}
+activate API
+
+alt Faltan campos obligatorios
+    API --> Frontend : 400 Bad Request\nbody: {error: "Los campos nombre, email, telefono y password son obligatorios"}
+    Frontend --> Usuario : Muestra error:\n"Completá todos los campos"
+else Campos completos
+    API -> DB : SELECT id FROM usuarios\nWHERE email = ?
+    activate DB
+    DB --> API : resultado consulta
+    deactivate DB
+
+    alt Email ya registrado
+        API --> Frontend : 409 Conflict\nbody: {error: "El email ya está registrado"}
+        Frontend --> Usuario : Muestra error:\n"Este email ya tiene una cuenta"
+    else Email disponible
+        API -> API : Hashea password (bcrypt)\nrol = "cliente"
+        API -> DB : INSERT INTO usuarios\n(nombre, email, telefono, password_hash, rol)
+        activate DB
+        DB --> API : registro creado\n(id, nombre, email, telefono, rol)
+        deactivate DB
+        API --> Frontend : 201 Created\nbody: {id, nombre, email, telefono, rol}
+        Frontend --> Usuario : Muestra confirmación de registro
+    end
+end
+
+deactivate API
+@enduml
