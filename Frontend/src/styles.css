@@ -1,0 +1,799 @@
+:root {
+  --fondo: #0e0f0e;
+  --superficie: #171917;
+  --texto: #ece7db;
+  --suave: #a29f94;
+  --linea: #2e312e;
+  --verde: #8db596;
+  --error: #ff9a8f;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Hanken Grotesk", sans-serif;
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3,
+.logo {
+  font-family: "Newsreader", serif;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: 2.2rem;
+  line-height: 1.1;
+  margin: 0 0 1.5rem;
+}
+
+h2 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0 0 2.5rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+em {
+  font-style: italic;
+  color: var(--verde);
+}
+
+a {
+  color: var(--verde);
+}
+
+/* Botones */
+button,
+.boton {
+  display: inline-block;
+  font: 600 0.95rem "Hanken Grotesk", sans-serif;
+  padding: 0.8rem 1.5rem;
+  border: 1.5px solid var(--texto);
+  border-radius: 2px;
+  background: var(--texto);
+  color: var(--fondo);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button.secundario,
+.boton--borde {
+  background: transparent;
+  color: var(--texto);
+  border-color: var(--linea);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--verde);
+  outline-offset: 2px;
+}
+
+/* Formularios */
+form {
+  display: grid;
+  gap: 1.1rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 500;
+}
+
+input {
+  font: inherit;
+  padding: 0.7rem 0.8rem;
+  border: 1.5px solid var(--linea);
+  border-radius: 2px;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.error {
+  color: var(--error);
+  margin: 0;
+  font-weight: 500;
+}
+
+.aviso {
+  padding: 0.8rem 1rem;
+  margin: 0 0 1.2rem;
+  border-left: 3px solid var(--verde);
+  background: rgba(141, 181, 150, 0.12);
+}
+
+.pie {
+  margin: 1.5rem 0 0;
+  color: var(--suave);
+}
+
+.suave {
+  color: var(--suave);
+  margin: 0;
+}
+
+/* Sitio público */
+.logo {
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem clamp(1rem, 4vw, 3rem);
+  background: rgba(14, 15, 14, 0.93);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--linea);
+}
+
+.cabecera nav {
+  display: flex;
+  gap: 1.75rem;
+}
+
+.cabecera nav a {
+  color: var(--suave);
+  text-decoration: none;
+}
+
+.cabecera nav a:hover {
+  color: var(--texto);
+}
+
+.cabecera-acciones {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.enlace {
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.hero {
+  max-width: 70rem;
+  padding: clamp(4rem, 12vw, 9rem) clamp(1rem, 4vw, 3rem) clamp(3rem, 8vw, 6rem);
+}
+
+.hero h1 {
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.hero p {
+  max-width: 34rem;
+  font-size: 1.2rem;
+  color: var(--suave);
+  margin: 1.75rem 0 2.25rem;
+}
+
+.hero-acciones {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Portada con imagen de fondo a todo el ancho */
+.hero {
+  max-width: none;
+  min-height: min(85vh, 46rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-inline: max(clamp(1rem, 4vw, 3rem), calc((100% - 70rem) / 2));
+  background:
+    linear-gradient(
+      90deg,
+      rgba(14, 15, 14, 0.9) 0%,
+      rgba(14, 15, 14, 0.6) 55%,
+      rgba(14, 15, 14, 0.35) 100%
+    ),
+    url("/barberia-shop.png") center / cover no-repeat;
+}
+
+.hero p {
+  color: var(--texto);
+}
+
+@media (max-width: 760px) {
+  .hero {
+    background:
+      linear-gradient(rgba(14, 15, 14, 0.75), rgba(14, 15, 14, 0.75)),
+      url("/barberia-shop.png") center / cover no-repeat;
+  }
+}
+
+.cinta {
+  overflow: hidden;
+  white-space: nowrap;
+  border-block: 1px solid var(--linea);
+  padding: 1rem 0;
+}
+
+.cinta-pista {
+  display: inline-flex;
+  animation: cinta 40s linear infinite;
+}
+
+.cinta span {
+  font: italic 400 1.3rem "Newsreader", serif;
+  padding-right: 2rem;
+}
+
+.cinta span::after {
+  content: "•";
+  padding-left: 2rem;
+  color: var(--verde);
+}
+
+@keyframes cinta {
+  to {
+    transform: translateX(-25%);
+  }
+}
+
+.seccion {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: clamp(3.5rem, 8vw, 6rem) clamp(1rem, 4vw, 3rem);
+}
+
+.etiqueta {
+  color: var(--suave);
+  margin: 0 0 0.75rem;
+}
+
+.servicios,
+.equipo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.servicios li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--linea);
+}
+
+.servicios li:last-child {
+  border-bottom: 1px solid var(--linea);
+}
+
+.servicios p {
+  margin: 0.35rem 0 0;
+  color: var(--suave);
+  max-width: 34rem;
+}
+
+.precio {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.precio strong {
+  display: block;
+  font: 500 1.4rem "Newsreader", serif;
+}
+
+.precio span {
+  color: var(--suave);
+  font-size: 0.9rem;
+}
+
+.equipo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.5rem;
+}
+
+.equipo li {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  padding: 1.5rem;
+}
+
+.equipo p {
+  margin: 0.25rem 0 0;
+  color: var(--suave);
+}
+
+.inicial {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--verde);
+  border-radius: 50%;
+  font: italic 400 1.6rem "Newsreader", serif;
+  color: var(--verde);
+}
+
+.contacto dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 2rem;
+  margin: 0 0 2.5rem;
+}
+
+.contacto dt {
+  color: var(--suave);
+  margin-bottom: 0.35rem;
+}
+
+.contacto dd {
+  margin: 0;
+}
+
+.pie-sitio {
+  text-align: center;
+  color: var(--suave);
+  padding: 2.5rem 1rem;
+  border-top: 1px solid var(--linea);
+}
+
+/* Login y registro */
+.entrada {
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.tarjeta {
+  width: min(30rem, 100%);
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  padding: 2.5rem 2rem;
+}
+
+/* Home del cliente y reserva */
+.barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem clamp(1rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--linea);
+}
+
+.contenido {
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.proximo,
+.reserva {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  padding: 1.75rem;
+}
+
+.proximo h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.reserva h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.ficha {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.hora {
+  font: 400 3.6rem/1 "Newsreader", serif;
+  color: var(--verde);
+  margin: 0;
+}
+
+.detalle {
+  margin: 0;
+}
+
+.fecha {
+  display: inline-block;
+}
+
+.fecha::first-letter {
+  text-transform: uppercase;
+}
+
+.pie-local {
+  text-align: center;
+  color: var(--suave);
+  padding: 2rem 1rem;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  font-weight: 500;
+  padding: 0;
+  margin-bottom: 0.6rem;
+}
+
+.opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+button.opcion {
+  background: transparent;
+  color: var(--texto);
+  border: 1.5px solid var(--linea);
+  font: 500 1rem "Hanken Grotesk", sans-serif;
+  text-align: left;
+  padding: 0.6rem 1rem;
+}
+
+button.opcion[aria-pressed="true"] {
+  border-color: var(--verde);
+  background: rgba(141, 181, 150, 0.14);
+}
+
+button.opcion:disabled {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.opcion small {
+  display: block;
+  color: var(--suave);
+  font-weight: 400;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-end;
+}
+
+.velo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.dialogo {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  padding: 2rem;
+  max-width: 24rem;
+  text-align: center;
+}
+
+.dialogo h2 {
+  font-size: 1.8rem;
+  margin: 0 0 0.8rem;
+}
+
+.dialogo p {
+  margin: 0 0 1.5rem;
+}
+
+/* Logo */
+.logo img {
+  display: block;
+  height: 2.4rem;
+  width: auto;
+}
+
+.cabecera .logo img {
+  height: 2.4rem;
+}
+
+.entrada .logo img {
+  height: auto;
+  width: min(18rem, 80vw);
+}
+
+/* Responsive */
+@supports (height: 100dvh) {
+  .entrada {
+    min-height: 100dvh;
+  }
+}
+
+/* Menú de la portada */
+html {
+  scroll-padding-top: 5rem;
+}
+
+.menu {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.cabecera nav {
+  margin: 0 auto;
+}
+
+.hamburguesa {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: transparent;
+  border: 1.5px solid var(--linea);
+}
+
+.hamburguesa span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--texto);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.hamburguesa[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburguesa[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburguesa[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Tablet y celular: el menú se abre con la hamburguesa */
+@media (max-width: 900px) {
+  .hamburguesa {
+    display: flex;
+  }
+
+  .menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding: 0.5rem 1rem 1.5rem;
+    background: var(--fondo);
+    border-bottom: 1px solid var(--linea);
+  }
+
+  .menu--abierto {
+    display: flex;
+  }
+
+  .cabecera nav {
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+  }
+
+  .cabecera nav a {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--linea);
+    font-size: 1.1rem;
+  }
+
+  .cabecera-acciones {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .cabecera-acciones .enlace,
+  .cabecera-acciones .boton {
+    text-align: center;
+  }
+
+  .cabecera-acciones .enlace {
+    padding: 0.8rem 1.5rem;
+    border: 1.5px solid var(--linea);
+    border-radius: 2px;
+  }
+}
+
+@media (max-width: 760px) {
+  h2 {
+    margin-bottom: 1.75rem;
+  }
+
+  .seccion {
+    padding-block: 3rem;
+  }
+
+  .servicios li {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .precio {
+    text-align: left;
+  }
+
+  .barra {
+    padding: 0.75rem 1rem;
+  }
+
+  .contenido {
+    padding: 1.5rem 1rem;
+  }
+
+  .logo img,
+  .cabecera .logo img {
+    height: 2rem;
+  }
+}
+
+/* Celular */
+@media (max-width: 480px) {
+  .cabecera {
+    padding: 0.75rem 1rem;
+  }
+
+  .barra button {
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .logo img,
+  .cabecera .logo img {
+    height: 1.8rem;
+  }
+
+  .hero {
+    padding-top: 3rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+  }
+
+  .hero-acciones .boton {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  .contacto .boton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .tarjeta,
+  .reserva {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .tarjeta h1 {
+    font-size: 1.8rem;
+  }
+
+  .proximo {
+    padding: 1.25rem;
+  }
+
+  .ficha {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .opciones button.opcion {
+    flex: 1 1 auto;
+  }
+
+  .acciones {
+    flex-direction: column-reverse;
+  }
+
+  .acciones button {
+    width: 100%;
+  }
+
+  .dialogo {
+    width: 100%;
+    padding: 1.5rem;
+  }
+}
+
+/* Accesibilidad: respetar "reducir movimiento" */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .cinta-pista {
+    animation: none;
+  }
+
+  .hamburguesa span {
+    transition: none;
+  }
+}
+
+/* Navegación y cancelación en "Tus turnos" */
+.barra {
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.acciones-turno {
+  margin-top: 1.25rem;
+}
+
+button.peligro {
+  background: transparent;
+  color: var(--error);
+  border-color: var(--error);
+}
