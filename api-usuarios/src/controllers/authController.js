@@ -1,12 +1,13 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
+const { generarToken } = require("../utils/token");
 
 const SALT_ROUNDS = 10;
 
 /**
  * POST /users
  * Diagrama: Registro de Usuario
+ * - (validarRegistro ya comprobó los campos obligatorios)
  * - Verifica si el email ya existe
  * - Hashea el password
  * - Asigna rol = "cliente" por defecto
@@ -14,13 +15,6 @@ const SALT_ROUNDS = 10;
  */
 async function registrar(req, res) {
   const { nombre, email, telefono, password } = req.body;
-
-  // telefono es NOT NULL en la tabla, así que también se valida acá
-  if (!nombre || !email || !telefono || !password) {
-    return res.status(400).json({
-      error: "Los campos nombre, email, telefono y password son obligatorios",
-    });
-  }
 
   try {
     // SELECT id FROM usuarios WHERE email = ?
@@ -62,6 +56,7 @@ async function registrar(req, res) {
 /**
  * POST /login
  * Diagrama: Login de Usuario
+ * - (validarLogin ya comprobó los campos obligatorios)
  * - Busca el usuario por email
  * - Si no existe -> 401
  * - Si existe, compara password con bcrypt.compare
@@ -70,12 +65,6 @@ async function registrar(req, res) {
  */
 async function login(req, res) {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({
-      error: "Los campos email y password son obligatorios",
-    });
-  }
 
   try {
     // SELECT * FROM usuarios WHERE email = ?
@@ -103,11 +92,7 @@ async function login(req, res) {
     }
 
     // Password correcto -> Genera token JWT (incluye userId, rol)
-    const token = jwt.sign(
-      { userId: usuario.id, rol: usuario.rol },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
-    );
+    const token = generarToken(usuario);
 
     // 200 OK -> {token, userId, rol}
     return res.status(200).json({
@@ -124,33 +109,16 @@ async function login(req, res) {
 /**
  * GET /validar-token
  * Diagrama: Validación de Token entre APIs (Turnos -> Usuarios)
- * - Lee el header Authorization: Bearer <token>
- * - Verifica el JWT
- * - Token válido -> 200 {userId, rol, valido: true}
- * - Token inválido o expirado -> 401 {valido: false}
+ * - El middleware autenticar ya verificó el token y dejó los datos en req.usuario
+ * - Responde 200 {userId, rol, valido: true}
+ * - Si el token es inválido o expiró, autenticar responde 401 {valido: false}
  */
 function validarToken(req, res) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ valido: false });
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Token válido -> 200 OK {userId, rol, valido: true}
-    return res.status(200).json({
-      userId: payload.userId,
-      rol: payload.rol,
-      valido: true,
-    });
-  } catch (error) {
-    // Token inválido o expirado -> 401 Unauthorized {valido: false}
-    return res.status(401).json({ valido: false });
-  }
+  return res.status(200).json({
+    userId: req.usuario.userId,
+    rol: req.usuario.rol,
+    valido: true,
+  });
 }
 
 module.exports = { registrar, login, validarToken };
