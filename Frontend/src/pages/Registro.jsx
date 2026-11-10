@@ -30,18 +30,18 @@ export default function Registro() {
 
   return (
     <Marco titulo="Creá tu cuenta">
-      <form onSubmit={enviar}>
+      <form onSubmit={enviar} noValidate>
         <label>Nombre
-          <input value={datos.nombre} onChange={cambiar("nombre")} required />
+          <input value={datos.nombre} onChange={cambiar("nombre")}/>
         </label>
         <label>Email
-          <input type="email" value={datos.email} onChange={cambiar("email")} required />
+          <input type="email" value={datos.email} onChange={cambiar("email")}/>
         </label>
         <label>Teléfono
-          <input type="tel" value={datos.telefono} onChange={cambiar("telefono")} required />
+          <input type="tel" value={datos.telefono} onChange={cambiar("telefono")}/>
         </label>
         <label>Contraseña
-          <input type="password" value={datos.password} onChange={cambiar("password")} required />
+          <input type="password" value={datos.password} onChange={cambiar("password")}/>
         </label>
         {error && <p className="error" role="alert">{error}</p>}
         <button disabled={cargando}>{cargando ? "Creando..." : "Crear cuenta"}</button>
