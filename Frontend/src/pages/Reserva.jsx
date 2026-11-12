@@ -25,10 +25,18 @@ export default function Reserva() {
 
   const esDomingo = fecha && new Date(`${fecha}T12:00:00`).getDay() === 0;
 
-  useEffect(() => { obtenerBarberos().then(setBarberos); }, []);
+  const cargarHorarios = () =>
+    obtenerHorariosLibres(barbero.id, fecha)
+      .then(setHorarios)
+      .catch((err) => { setHorarios([]); setError(err.message); });
+
+  useEffect(() => {
+    obtenerBarberos().then(setBarberos).catch((err) => setError(err.message));
+  }, []);
   useEffect(() => {
     setHora("");
-    if (barbero && fecha && !esDomingo) obtenerHorariosLibres(barbero.id, fecha).then(setHorarios);
+    setError("");
+    if (barbero && fecha && !esDomingo) cargarHorarios();
     else setHorarios([]);
   }, [barbero, fecha]);
 
@@ -44,6 +52,11 @@ export default function Reserva() {
       setConfirmado(turno);
     } catch (err) {
       setError(err.message);
+      // 409: alguien más tomó ese horario; 400: horario inválido. Se actualiza la grilla.
+      if (err.status === 409 || err.status === 400) {
+        setHora("");
+        cargarHorarios();
+      }
     } finally {
       setEnviando(false);
     }

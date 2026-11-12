@@ -93,7 +93,8 @@ async function eliminar(req, res) {
       turnos = await obtenerTurnosReservados(id, req.headers.authorization);
     } catch (error) {
       console.error("No se pudo consultar ms-turnos:", error.message);
-      return res.status(502).json({
+      const sinRespuesta = error.code === "ECONNABORTED" || error.code === "ETIMEDOUT";
+      return res.status(sinRespuesta ? 504 : 502).json({
         error: "No se pudo verificar los turnos del empleado. Intente nuevamente.",
       });
     }

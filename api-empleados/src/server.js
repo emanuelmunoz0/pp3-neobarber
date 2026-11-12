@@ -2,22 +2,23 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const empleadosRoutes = require("./routes/empleadosRoutes");
+const { crearVerificadorOrigen } = require("./utils/cors");
 
 const app = express();
 
-// CORS: solo los orígenes del frontend listados en CORS_ORIGINS.
-// Las llamadas entre servidores (sin cabecera Origin) siempre se permiten.
+// CORS: solo los orígenes del frontend listados en CORS_ORIGINS (admite comodines,
+// ej: https://*.netlify.app). Las llamadas entre servidores (sin Origin) siempre se permiten.
 const origenesPermitidos = (process.env.CORS_ORIGINS || "")
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
 
+const origenPermitido = crearVerificadorOrigen(origenesPermitidos);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || origenesPermitidos.length === 0 || origenesPermitidos.includes(origin)) {
-        return callback(null, true);
-      }
+      if (origenPermitido(origin)) return callback(null, true);
       return callback(new Error("Origen no permitido por CORS"));
     },
   })
@@ -30,13 +31,22 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "API Empleados funcionando" });
 });
 
+// Ruta inexistente -> 404
+app.use((req, res) => {
+  res.status(404).json({ error: "Ruta no encontrada" });
+});
+
 // Manejo de errores (por ejemplo, CORS rechazado o JSON mal formado)
 app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
   if (err.message === "Origen no permitido por CORS") {
     return res.status(403).json({ error: err.message });
   }
   if (err.type === "entity.parse.failed") {
     return res.status(400).json({ error: "El cuerpo de la solicitud no es un JSON válido" });
+  }
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({ error: "El cuerpo de la solicitud es demasiado grande" });
   }
   console.error(err);
   return res.status(500).json({ error: "Error interno del servidor" });

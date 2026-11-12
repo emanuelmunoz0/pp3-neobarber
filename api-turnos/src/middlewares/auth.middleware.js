@@ -1,7 +1,10 @@
 const AppError = require('../utils/AppError');
-const { usuariosClient } = require('../utils/httpClient');
+const { usuariosClient, errorServicioExterno } = require('../utils/httpClient');
 
 // Valida el JWT contra ms-usuarios (GET /validar-token)
+//  - sin token                      -> 401
+//  - token inválido o vencido       -> 401
+//  - ms-usuarios caído / con error  -> 502 (504 si tarda demasiado)
 module.exports = async (req, res, next) => {
   try {
     const authorization = req.headers.authorization;
@@ -13,21 +16,18 @@ module.exports = async (req, res, next) => {
       headers: { Authorization: authorization },
     });
 
+    if (!data || data.userId === undefined || !data.rol) {
+      throw new AppError('Respuesta inválida de ms-usuarios', 502);
+    }
+
     // ms-usuarios devuelve { userId, rol, valido }
-    req.usuario = { id: data.userId, userId: data.userId, rol: data.rol };
+    req.usuario = { id: Number(data.userId), userId: Number(data.userId), rol: data.rol };
     next();
   } catch (err) {
-    if (err instanceof AppError) {
-      return next(err);
+    if (err instanceof AppError) return next(err);
+    if (err.response?.status === 401) {
+      return next(new AppError('Token inválido o vencido', 401));
     }
-    if (err.response) {
-      const status = err.response.status === 401 ? 401 : 502;
-      const msg = status === 401
-        ? 'Token inválido o vencido'
-        : 'No se pudo validar el token con ms-usuarios';
-      return next(new AppError(msg, status));
-    }
-    console.error('Error llamando a ms-usuarios:', err.code, err.message);
-    next(new AppError('ms-usuarios no responde', 503));
+    next(errorServicioExterno(err, 'ms-usuarios'));
   }
 };

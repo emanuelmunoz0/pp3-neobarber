@@ -1,6 +1,6 @@
 // Servicio de turnos conectado a api-turnos (ms-turnos).
 import { listarEmpleados } from "../admin/services/empleadosService.js";
-import { obtenerSesion } from "../auth.js";
+import { pedirApi } from "../api.js";
 
 const API = import.meta.env.VITE_API_TURNOS_URL;
 
@@ -14,30 +14,14 @@ const HORARIOS = Array.from({ length: 18 }, (_, i) => {
 const normHora = (h) => String(h).slice(0, 5);
 const normFecha = (f) => String(f).slice(0, 10);
 
-// AJUSTAR: depende de cómo guarde el token tu auth.js
-const token = () => obtenerSesion()?.token;
-
-async function pedir(ruta, opciones = {}) {
-  const res = await fetch(`${API}${ruta}`, {
-    ...opciones,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token()}`,
-      ...opciones.headers,
-    },
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Error al comunicarse con el servidor");
-  return data;
-}
+const pedir = (ruta, opciones) => pedirApi(API, ruta, opciones);
 
 export const formatearFecha = (fecha) =>
   new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", {
     weekday: "long", day: "numeric", month: "long",
   });
 
-// Los barberos siguen siendo los empleados cargados por el administrador
-// (cuando exista ms-empleados, se cambia solo listarEmpleados)
+// Los barberos son los empleados cargados por el administrador (ms-empleados)
 export async function obtenerBarberos() {
   return listarEmpleados();
 }
@@ -87,7 +71,7 @@ export async function obtenerProximoTurno() {
   return futuros[0] || null;
 }
 
-// El cliente cancela uno de sus propios turnos
+// El cliente cancela uno de sus propios turnos (el admin puede cancelar cualquiera)
 export async function cancelarTurno(id) {
   await pedir(`/api/turnos/${id}/cancelar`, { method: "PATCH" });
 }

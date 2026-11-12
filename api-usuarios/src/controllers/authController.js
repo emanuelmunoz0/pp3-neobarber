@@ -19,7 +19,7 @@ async function registrar(req, res) {
   try {
     // SELECT id FROM usuarios WHERE email = ?
     const existente = await pool.query(
-      "SELECT id FROM usuarios WHERE email = $1", [email] // el signo $ es un marcador que usa postGreSQL para proteger contra inyecciones SQL
+      "SELECT id FROM usuarios WHERE LOWER(email) = $1", [email] // el signo $ es un marcador que usa postGreSQL para proteger contra inyecciones SQL
     );
 
     if (existente.rows.length > 0) {
@@ -48,6 +48,10 @@ async function registrar(req, res) {
     // 201 Created -> {id, nombre, email, telefono, rol}
     return res.status(201).json(usuarioCreado);
   } catch (error) {
+    // 23505 = unique_violation: dos registros simultáneos con el mismo email
+    if (error.code === "23505") {
+      return res.status(409).json({ error: "El email ya está registrado" });
+    }
     console.error("Error en registro:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
   }
@@ -69,7 +73,7 @@ async function login(req, res) {
   try {
     // SELECT * FROM usuarios WHERE email = ?
     const resultado = await pool.query(
-      "SELECT id, password_hash, rol FROM usuarios WHERE email = $1",
+      "SELECT id, password_hash, rol FROM usuarios WHERE LOWER(email) = $1",
       [email]
     );
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { obtenerTurnosDeFecha } from "../services/turnosService.js";
+import { obtenerTurnosDeFecha, cancelarTurno } from "../services/turnosService.js";
 
 const aISO = (d) => new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
@@ -9,17 +9,42 @@ export default function AdminTurnos() {
   const [turnos, setTurnos] = useState([]);
   const [barbero, setBarbero] = useState("");
   const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [aviso, setAviso] = useState("");
+
+  const cargar = () =>
+    obtenerTurnosDeFecha(fecha)
+      .then(setTurnos)
+      .catch((err) => { setTurnos([]); setError(err.message); })
+      .finally(() => setCargando(false));
 
   useEffect(() => {
     setCargando(true);
     setBarbero("");
-    obtenerTurnosDeFecha(fecha).then(setTurnos).finally(() => setCargando(false));
+    setError("");
+    setAviso("");
+    cargar();
   }, [fecha]);
+
+  async function cancelar(t) {
+    if (!window.confirm(`¿Cancelar el turno de las ${t.hora} con ${t.barberoNombre} (cliente N.º ${t.userId})?`)) return;
+    setError("");
+    setAviso("");
+    try {
+      await cancelarTurno(t.id);
+      setAviso("Turno cancelado.");
+    } catch (err) {
+      setError(err.message);
+    }
+    cargar();
+  }
 
   const barberos = [...new Set(turnos.map((t) => t.barberoNombre))];
   const lista = barbero ? turnos.filter((t) => t.barberoNombre === barbero) : turnos;
   const ahora = new Date().toTimeString().slice(0, 5);
   const proximo = fecha === hoy ? lista.find((t) => t.hora >= ahora) : null;
+  // Solo se pueden cancelar turnos que todavía no pasaron
+  const cancelable = (t) => fecha > hoy || (fecha === hoy && t.hora > ahora);
   const esDomingo = new Date(`${fecha}T12:00:00`).getDay() === 0;
 
   return (
@@ -37,6 +62,9 @@ export default function AdminTurnos() {
         </label>
       </div>
 
+      {aviso && <p className="aviso" role="status">{aviso}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
+
       {cargando ? (
         <p className="suave">Cargando turnos...</p>
       ) : lista.length ? (
@@ -51,6 +79,9 @@ export default function AdminTurnos() {
                   <span>con {t.barberoNombre}</span>
                 </div>
                 {t === proximo && <span className="adm-marca">Próximo</span>}
+                {cancelable(t) && (
+                  <button className="adm-peligro" onClick={() => cancelar(t)}>Cancelar</button>
+                )}
               </li>
             ))}
           </ul>

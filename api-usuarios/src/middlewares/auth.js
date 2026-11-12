@@ -12,8 +12,13 @@ function autenticar(req, res, next) {
     return res.status(401).json({ valido: false, error: "Token requerido" });
   }
 
+  const token = authHeader.slice("Bearer ".length).trim();
+  if (!token) {
+    return res.status(401).json({ valido: false, error: "Token requerido" });
+  }
+
   try {
-    const payload = verificarJwt(authHeader.split(" ")[1]);
+    const payload = verificarJwt(token);
     req.usuario = { userId: payload.userId, rol: payload.rol };
     next();
   } catch (error) {

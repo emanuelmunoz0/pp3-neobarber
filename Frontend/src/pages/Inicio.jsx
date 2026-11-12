@@ -10,9 +10,13 @@ export default function Inicio() {
   const [turno, setTurno] = useState(null);
   const [cargando, setCargando] = useState(esCliente);
   const [aviso, setAviso] = useState("");
+  const [error, setError] = useState("");
 
   const cargar = () =>
-    obtenerProximoTurno(sesion.userId).then(setTurno).finally(() => setCargando(false));
+    obtenerProximoTurno()
+      .then(setTurno)
+      .catch((err) => setError(err.message))
+      .finally(() => setCargando(false));
 
   useEffect(() => {
     if (esCliente) cargar();
@@ -21,8 +25,14 @@ export default function Inicio() {
   async function cancelar() {
     const detalle = `${formatearFecha(turno.fecha)} a las ${turno.hora} con ${turno.barberoNombre}`;
     if (!window.confirm(`¿Cancelar tu turno del ${detalle}?`)) return;
-    await cancelarTurno(turno.id, sesion.userId);
-    setAviso("Tu turno fue cancelado.");
+    setError("");
+    setAviso("");
+    try {
+      await cancelarTurno(turno.id);
+      setAviso("Tu turno fue cancelado.");
+    } catch (err) {
+      setError(err.message);
+    }
     cargar();
   }
 
@@ -44,6 +54,7 @@ export default function Inicio() {
         {esCliente ? (
           <>
             {aviso && <p className="aviso" role="status">{aviso}</p>}
+            {error && <p className="error" role="alert">{error}</p>}
             <section className="proximo">
               <h1>Tu próximo turno</h1>
               {cargando ? (

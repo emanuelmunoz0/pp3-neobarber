@@ -24,7 +24,7 @@ export default function Landing() {
   const [abierto, setAbierto] = useState(false);
   const cerrar = () => setAbierto(false);
   const [equipo, setEquipo] = useState([]);
-  useEffect(() => { obtenerBarberos().then(setEquipo); }, []);
+  useEffect(() => { obtenerBarberos().then(setEquipo).catch(() => setEquipo([])); }, []);
 
   return (
     <div className="sitio">

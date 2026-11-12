@@ -12,7 +12,7 @@ const SALT_ROUNDS = 10;
 
 async function seedAdmin() {
   const nombre = process.env.ADMIN_NOMBRE;
-  const email = process.env.ADMIN_EMAIL;
+  const email = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
   const telefono = process.env.ADMIN_TELEFONO;
   const password = process.env.ADMIN_PASSWORD;
 
@@ -25,7 +25,7 @@ async function seedAdmin() {
 
   try {
     const existente = await pool.query(
-      "SELECT id FROM usuarios WHERE email = $1",
+      "SELECT id FROM usuarios WHERE LOWER(email) = $1",
       [email]
     );
 

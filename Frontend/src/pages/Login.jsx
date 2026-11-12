@@ -9,6 +9,12 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
+  // Aviso que deja api.js cuando el token venció (se muestra una sola vez)
+  const [avisoSesion] = useState(() => {
+    const aviso = sessionStorage.getItem("avisoSesion");
+    sessionStorage.removeItem("avisoSesion");
+    return aviso;
+  });
   const navegar = useNavigate();
   const { state } = useLocation();
 
@@ -29,7 +35,7 @@ export default function Login() {
 
   return (
     <Marco titulo="Iniciá sesión">
-      {state?.mensaje && <p className="aviso">{state.mensaje}</p>}
+      {(state?.mensaje || avisoSesion) && <p className="aviso">{state?.mensaje || avisoSesion}</p>}
       <form onSubmit={enviar}>
         <label>Email
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
