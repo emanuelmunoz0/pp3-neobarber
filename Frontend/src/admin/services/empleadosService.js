@@ -28,3 +28,12 @@ export async function crearEmpleado({ nombre, apellido, especialidad }) {
 export async function eliminarEmpleado(id) {
   await pedirApi(API, `/api/empleados/${id}`, { method: "DELETE" });
 }
+
+export async function crearEmpleado({ nombre, apellido, especialidad }) {
+  console.log("Intentando crear empleado con URL:", API);
+  const nuevo = await pedirApi(API, "/api/empleados", {
+    method: "POST",
+    body: JSON.stringify({ nombre, apellido, cargo: especialidad }),
+  });
+  return aFront(nuevo);
+}
