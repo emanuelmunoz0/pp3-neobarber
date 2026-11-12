@@ -116,7 +116,7 @@ export default function Reserva() {
         <div className="velo">
           <div className="dialogo" role="dialog" aria-modal="true" aria-labelledby="t-ok">
             <h2 id="t-ok">¡Turno agendado con éxito!</h2>
-            <p>{formatearFecha(confirmado.fecha)} a las {confirmado.hora} con {confirmado.barberoNombre}.</p>
+            <p>{formatearFecha(confirmado.fecha)} a las {confirmado.hora}, te esperamos!.</p>
             <button autoFocus onClick={() => navegar("/turnos")}>OK</button>
           </div>
         </div>
